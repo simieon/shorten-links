@@ -1,4 +1,4 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "./entities/user.entity";
 import {Repository} from "typeorm";
@@ -19,7 +19,7 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({email: registerUserDto.email})
 
     if(user){
-      return {message: "user already exists"}
+      return {message: "User already exists"}
     }
 
     const hash = await bcrypt.hash(registerUserDto.password, keys.jwtSalt)
@@ -32,11 +32,11 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({email: loginUserDto.email})
 
     if(!user){
-      throw new UnauthorizedException()
+      throw new BadRequestException('Wrong login or password')
     }
 
     if (!await bcrypt.compare(loginUserDto.password, user.password)) {
-      throw new UnauthorizedException()
+      throw new BadRequestException('Wrong login or password')
     }
 
     const payload = {sub: user.id, email: user.email}
