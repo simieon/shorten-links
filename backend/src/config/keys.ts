@@ -1,4 +1,4 @@
-const PORT = 6000
+const PORT = 8000
 
 export const keys = {
   port: PORT,
