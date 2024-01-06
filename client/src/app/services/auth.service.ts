@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {LoginModel} from "../pages/auth/login/login.model";
 import {keys} from "../config/keys";
 import {RegisterModel} from "../pages/auth/register/register.model";
+import {Router} from "@angular/router";
 
 type CurrentUserData = {
   userId: number | null
@@ -15,7 +16,8 @@ export class AuthService{
   private userData!: CurrentUserData
 
   constructor(
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private router: Router
   ) { }
 
   async login(user: LoginModel) {
@@ -31,19 +33,26 @@ export class AuthService{
   logout(){
     this.userData = {access_token: "", userId: 0}
     localStorage.removeItem('userData')
+    this.router.navigate(['/login'])
   }
 
 
   isAuthenticated(): boolean{
-    this.userData = JSON.parse(localStorage.getItem('userData')!) || {access_token: '', userId: 0}
+    this.loadUserDataFromLS()
     return !!this.userData.access_token
   }
 
   getToken(): string | null{
+    this.loadUserDataFromLS()
     return this.userData.access_token
   }
 
   getUserId(): number | null {
+    this.loadUserDataFromLS()
     return this.userData.userId
+  }
+
+  private loadUserDataFromLS(){
+    this.userData = JSON.parse(localStorage.getItem('userData')!) || {access_token: '', userId: 0}
   }
 }

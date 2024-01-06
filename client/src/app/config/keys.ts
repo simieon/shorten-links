@@ -3,4 +3,5 @@ export const keys = {
   serverPath: API_SERVER,
   loginPath: API_SERVER + '/auth/login',
   registerPath: API_SERVER + '/auth/register',
+  linksPath: API_SERVER + '/links'
 }
