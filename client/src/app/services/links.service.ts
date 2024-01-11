@@ -29,4 +29,12 @@ export class LinksService {
 
     return this.httpClient.get<LinkModel[]>(keys.linksPath, {headers})
   }
+
+  getLink(id: number){
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.authService.getToken()}`
+    })
+
+    return this.httpClient.get<LinkModel>(keys.linksPath + `/${id}`, {headers})
+  }
 }

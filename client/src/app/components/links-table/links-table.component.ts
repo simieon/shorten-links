@@ -4,7 +4,7 @@ import {NgForOf, NgIf} from "@angular/common";
 import {RouterLink} from "@angular/router";
 
 @Component({
-  selector: 'app-links-table',
+  selector: 'app-links-table[links]',
   standalone: true,
   imports: [
     NgIf,
