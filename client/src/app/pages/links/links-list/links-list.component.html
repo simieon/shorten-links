@@ -1,0 +1,9 @@
+<app-header/>
+
+<div *ngIf="isLoading; else linksTable" class="w-1.5 mx-auto">
+  <app-loader/>
+</div>
+
+<ng-template #linksTable>
+  <app-links-table [links]="links" class="flex justify-center mt-8"/>
+</ng-template>

@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
-import {HeaderComponent} from "../../components/header/header.component";
-import {AuthService} from "../../services/auth.service";
+import {HeaderComponent} from "../../../components/header/header.component";
 import {ToastrService} from "ngx-toastr";
-import {LinksService} from "../../services/links.service";
+import {LinksService} from "../../../services/links.service";
 import {CreateLinkModel} from "./create-link.model";
 import {Router} from "@angular/router";
 
@@ -32,7 +31,6 @@ export class CreateLinkComponent {
           .subscribe(link => {
             this.router.navigate([`/details/${link.id}`])
           })
-
       }catch(e){
         console.error(e)
         this.toastr.error('Something went wrong')

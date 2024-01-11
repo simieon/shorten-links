@@ -1,0 +1,29 @@
+<div *ngIf="!links.length; else linksTable">
+  <p>
+    There are no links yet...
+  </p>
+</div>
+
+<ng-template #linksTable>
+  <table class="w-full max-w-5xl mx-auto text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <tr>
+        <th scope="col" class="px-6 py-3">#</th>
+        <th scope="col" class="px-6 py-3">Original</th>
+        <th scope="col" class="px-6 py-3">Shorten</th>
+        <th scope="col" class="px-6 py-3">Open</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let link of links; index as i" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+        <td class="px-6 py-4">{{i + 1}}</td>
+        <td class="px-6 py-4">{{link.from}}</td>
+        <td class="px-6 py-4">{{link.to}}</td>
+        <td class="px-6 py-4">
+          <a routerLink="/details/{{link.id}}">Open</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
