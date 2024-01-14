@@ -12,6 +12,6 @@ export class LinkCardComponent {
   @Input() link!: LinkModel
 
   formatDate(date: Date){
-    return date.toString()
+    return new Date(date).toLocaleDateString()
   }
 }

@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm";
 import {User} from "../../auth/entities/user.entity";
 
 @Entity()
@@ -15,7 +15,7 @@ export class Link {
   @Column({unique: true, nullable: false})
   code: string
 
-  @Column({default: () => 'CURRENT_TIMESTAMP' })
+  @Column({type: "timestamp", default: () => 'CURRENT_TIMESTAMP' })
   date: Date
 
   @Column({default: 0})

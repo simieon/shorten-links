@@ -1,4 +1,4 @@
-import {Injectable, InternalServerErrorException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, Res} from '@nestjs/common';
 import { CreateLinkDto } from './dto/create-link.dto';
 import { UpdateLinkDto } from './dto/update-link.dto';
 import {InjectRepository} from "@nestjs/typeorm";
@@ -22,14 +22,14 @@ export class LinksService {
       const code = shortid.generate()
 
       const from = createLinkDto.from
+      const user = await this.usersRepository.findOneBy({id: userId})
 
-      const existing = await this.linksRepository.findOneBy({from})
+      const existing = await this.linksRepository.findOneBy({from, owner: user})
       if(existing){
         return {link: existing}
       }
 
-      const to = keys.baseUrl + '/t/' + code;
-      const user = await this.usersRepository.findOneBy({id: userId})
+      const to = keys.baseUrl + '/links/t/' + code;
       const newLink = this.linksRepository.create({from, to, code, owner: user})
 
 
@@ -47,6 +47,20 @@ export class LinksService {
   async findOne(id: number, userId: number) {
     const user = await this.usersRepository.findOneBy({id: userId})
     return this.linksRepository.findOneBy({id, owner: user})
+  }
+
+  async clickLink(code: string, @Res() res){
+
+    const link = await this.linksRepository.findOneBy({code})
+
+    if(link){
+      link.clicks++
+      await this.linksRepository.save(link)
+      res.redirect(link.from)
+    }else{
+
+    res.status(404).json({message: '404 Link not found'})
+    }
   }
 
   update(id: number, updateLinkDto: UpdateLinkDto) {

@@ -4,12 +4,14 @@ import {ToastrService} from "ngx-toastr";
 import {LinksService} from "../../../services/links.service";
 import {CreateLinkModel} from "./create-link.model";
 import {Router} from "@angular/router";
+import {FooterComponent} from "../../../components/footer/footer.component";
 
 @Component({
   selector: 'app-create-link',
   standalone: true,
   imports: [
-    HeaderComponent
+    HeaderComponent,
+    FooterComponent
   ],
   templateUrl: './create-link.component.html',
   styleUrl: './create-link.component.css'
@@ -23,6 +25,7 @@ export class CreateLinkComponent {
 
   pressHandler(event: KeyboardEvent, link: string){
     if (event.key === 'Enter') {
+      console.log(link)
       const createLinkDto: CreateLinkModel = {
         from: link
       }

@@ -10,7 +10,7 @@ import {keys} from "../config/keys";
 })
 export class LinksService {
   constructor(
-    private authService:AuthService,
+    private authService: AuthService,
     private httpClient: HttpClient
   ) {}
 
