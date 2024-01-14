@@ -19,7 +19,7 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({email: registerUserDto.email})
 
     if(user){
-      return {message: "User already exists", statusCode: 400}
+      throw new BadRequestException('User already exists')
     }
 
     const hash = await bcrypt.hash(registerUserDto.password, keys.jwtSalt)
@@ -32,11 +32,11 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({email: loginUserDto.email})
 
     if(!user){
-      return {statusCode: 400, message: 'Wrong login or password'}
+      throw new BadRequestException('Invalid login or password')
     }
 
     if (!await bcrypt.compare(loginUserDto.password, user.password)) {
-      return {statusCode: 400, message: 'Wrong login or password'}
+      throw new BadRequestException('Invalid login or password')
     }
 
     const payload = {sub: user.id, email: user.email}

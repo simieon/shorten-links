@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {LinksService} from "../../../services/links.service";
 import {LinkModel} from "../../../models/link.model";
-import {ToastrService} from "ngx-toastr";
 import {LoaderComponent} from "../../../components/loader/loader.component";
 import {NgIf} from "@angular/common";
 import {LinksTableComponent} from "../../../components/links-table/links-table.component";
@@ -25,7 +24,6 @@ export class LinksListComponent implements OnInit {
 
   constructor(
     private linksService: LinksService,
-    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -40,8 +38,6 @@ export class LinksListComponent implements OnInit {
       .subscribe(links => {
         this.links = links
         this.isLoading = false
-      }, error => {
-        this.toastr.error(error.message)
       })
   }
 }

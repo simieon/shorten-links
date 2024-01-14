@@ -1,9 +1,12 @@
-import {Injectable, OnInit} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {LoginModel} from "../pages/auth/login/login.model";
 import {keys} from "../config/keys";
 import {RegisterModel} from "../pages/auth/register/register.model";
 import {Router} from "@angular/router";
+import {ErrorResponse, IErrorHandler} from "../helpers/types";
+import {Observable} from "rxjs";
+import {ToastrService} from "ngx-toastr";
 
 type CurrentUserData = {
   userId: number | null
@@ -12,18 +15,23 @@ type CurrentUserData = {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService{
+export class AuthService implements IErrorHandler{
   private userData!: CurrentUserData
 
   constructor(
     private httpClient: HttpClient,
+    private toastr: ToastrService,
     private router: Router
   ) { }
 
   async login(user: LoginModel) {
-    const response = await this.httpClient.post<CurrentUserData>(keys.loginPath, user).toPromise()
-    this.userData = response!
-    localStorage.setItem('userData', JSON.stringify(this.userData))
+    try {
+      const response = await this.httpClient.post<CurrentUserData>(keys.loginPath, user).toPromise()
+      this.userData = response!
+      localStorage.setItem('userData', JSON.stringify(this.userData))
+    } catch (e) {
+      this.handleError(e)
+    }
   }
 
   async register(user: RegisterModel){
@@ -35,7 +43,6 @@ export class AuthService{
     localStorage.removeItem('userData')
     this.router.navigate(['/login'])
   }
-
 
   isAuthenticated(): boolean{
     this.loadUserDataFromLS()
@@ -54,5 +61,14 @@ export class AuthService{
 
   private loadUserDataFromLS(){
     this.userData = JSON.parse(localStorage.getItem('userData')!) || {access_token: '', userId: 0}
+  }
+
+  handleError(error: unknown): Observable<never> | void {
+    if((error as ErrorResponse).hasOwnProperty('error')){
+      this.toastr.error((error as ErrorResponse).error.message)
+    } else {
+      this.toastr.error('Something went wrong')
+    }
+    console.error(error)
   }
 }

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import {HeaderComponent} from "../../../components/header/header.component";
-import {ToastrService} from "ngx-toastr";
 import {LinksService} from "../../../services/links.service";
 import {CreateLinkModel} from "./create-link.model";
 import {Router} from "@angular/router";
@@ -19,25 +18,19 @@ import {FooterComponent} from "../../../components/footer/footer.component";
 export class CreateLinkComponent {
   constructor(
     private linksService: LinksService,
-    private toastr: ToastrService,
     private router: Router
   ) {}
 
   pressHandler(event: KeyboardEvent, link: string){
     if (event.key === 'Enter') {
-      console.log(link)
       const createLinkDto: CreateLinkModel = {
         from: link
       }
-      try {
-        this.linksService.createLink(createLinkDto)
-          .subscribe(link => {
-            this.router.navigate([`/details/${link.id}`])
-          })
-      }catch(e){
-        console.error(e)
-        this.toastr.error('Something went wrong')
-      }
+
+      this.linksService.createLink(createLinkDto)
+        .subscribe(link => {
+          this.router.navigate([`/details/${link.id}`])
+        })
     }
   }
 }

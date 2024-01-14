@@ -6,6 +6,7 @@ import {CommonModule} from "@angular/common";
 import {RegisterModel} from "./register.model";
 import {MatInputModule} from "@angular/material/input";
 import {ToastrService} from "ngx-toastr";
+import {ErrorResponse} from "../../../helpers/types";
 
 @Component({
   selector: 'app-register',
@@ -47,7 +48,11 @@ export class RegisterComponent {
         this.toastr.success('successfully registered')
       }
     }catch(e){
-      this.toastr.error('something went wrong')
+      if((e as ErrorResponse).hasOwnProperty('error')){
+        this.toastr.error((e as ErrorResponse).error.message)
+      } else {
+        this.toastr.error('Something went wrong')
+      }
       console.error(e)
     }
   }

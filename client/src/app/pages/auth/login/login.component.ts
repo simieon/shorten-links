@@ -5,7 +5,6 @@ import {AuthService} from "../../../services/auth.service";
 import {FormsModule, NgForm} from "@angular/forms";
 import {LoginModel} from "./login.model";
 import {MatFormFieldModule} from "@angular/material/form-field";
-import {ToastrService} from "ngx-toastr";
 
 @Component({
   selector: 'app-login',
@@ -27,10 +26,8 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private toastr: ToastrService
-  ) {
-  }
+    private router: Router
+  ) {}
 
   async onLogin(form: NgForm){
     if(form.invalid){
@@ -42,17 +39,12 @@ export class LoginComponent {
       password: form.value.password
     }
 
-    try {
-      await this.authService.login(user)
+    await this.authService.login(user)
 
-      if(this.authService.isAuthenticated()){
-        this.router.navigate(['/'])
-      }
-
-      form.resetForm()
-    } catch (e) {
-      this.toastr.error('Invalid login or password')
-      console.error(e)
+    if(this.authService.isAuthenticated()){
+      this.router.navigate(['/'])
     }
+
+    form.resetForm()
   }
 }

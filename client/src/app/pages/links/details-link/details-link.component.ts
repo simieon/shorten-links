@@ -2,8 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {LinksService} from "../../../services/links.service";
 import {ActivatedRoute} from "@angular/router";
 import {LinkModel} from "../../../models/link.model";
-import {error} from "@angular/compiler-cli/src/transformers/util";
-import {ToastrService} from "ngx-toastr";
 import {LinkCardComponent} from "../../../components/link-card/link-card.component";
 import {NgIf} from "@angular/common";
 import {HeaderComponent} from "../../../components/header/header.component";
@@ -25,7 +23,6 @@ export class DetailsLinkComponent implements OnInit{
   constructor(
     private linksService: LinksService,
     private router: ActivatedRoute,
-    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -39,8 +36,6 @@ export class DetailsLinkComponent implements OnInit{
       .subscribe(link => {
         this.link = link
         console.log(this.link)
-      }, error => {
-        this.toastr.error(error.message)
       })
   }
 }
