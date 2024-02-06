@@ -1,4 +1,4 @@
-import {BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
+import {BadRequestException, Injectable} from '@nestjs/common';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "./entities/user.entity";
 import {Repository} from "typeorm";
@@ -7,6 +7,7 @@ import {RegisterUserDto} from "./dto/register-user.dto";
 import {LoginUserDto} from "./dto/login-user.dto";
 import * as bcrypt from "bcrypt";
 import {keys} from "../config/keys";
+import {GoogleCredentials} from "./dto/google-login-user.dto";
 
 @Injectable()
 export class AuthService {
@@ -44,6 +45,27 @@ export class AuthService {
     return {
       access_token: await this.jwtService.signAsync(payload),
       userId: user.id
+    }
+  }
+
+  async googleLogin(credentials: GoogleCredentials){
+    const user = await this.userRepository.findOneBy({email: credentials.email})
+
+    if(user){
+      const payload = {sub: user.id, email: user.email}
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+        userId: user.id
+      }
+    }
+
+    const newUser = this.userRepository.create({...credentials})
+    await this.userRepository.save(newUser)
+
+    const payload = {sub: newUser.id, email: newUser.email}
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+      userId: newUser.id
     }
   }
 }

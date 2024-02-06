@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router, RouterLink, RouterLinkActive} from "@angular/router";
 import {NgIf, NgOptimizedImage} from "@angular/common";
 import {AuthService} from "../../../services/auth.service";
 import {FormsModule, NgForm} from "@angular/forms";
 import {LoginModel} from "./login.model";
 import {MatFormFieldModule} from "@angular/material/form-field";
+import {GoogleSigninButtonModule, SocialAuthService} from "@abacritt/angularx-social-login";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-login',
@@ -16,18 +18,32 @@ import {MatFormFieldModule} from "@angular/material/form-field";
     FormsModule,
     MatFormFieldModule,
     NgIf,
+    GoogleSigninButtonModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy{
   emailActivated: boolean = false
   passwordActivated: boolean = false
+  private googleAuthSubscription!: Subscription
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private googleAuthService: SocialAuthService
   ) {}
+
+  ngOnInit() {
+    this.googleAuthSubscription = this.googleAuthService.authState.subscribe(user => {
+      this.authService.googleLogin({token: user.idToken})
+        .then(() => {
+          if(this.authService.isAuthenticated()){
+            this.router.navigate(['/'])
+          }
+        })
+    })
+  }
 
   async onLogin(form: NgForm){
     if(form.invalid){
@@ -46,5 +62,11 @@ export class LoginComponent {
     }
 
     form.resetForm()
+  }
+
+  ngOnDestroy() {
+    if (this.googleAuthSubscription) {
+      this.googleAuthSubscription.unsubscribe()
+    }
   }
 }

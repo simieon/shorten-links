@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {LoginModel} from "../pages/auth/login/login.model";
+import {GoogleLoginModel, LoginModel} from "../pages/auth/login/login.model";
 import {keys} from "../config/keys";
 import {RegisterModel} from "../pages/auth/register/register.model";
 import {Router} from "@angular/router";
 import {ErrorResponse, IErrorHandler} from "../helpers/types";
 import {Observable} from "rxjs";
 import {ToastrService} from "ngx-toastr";
+import {SocialAuthService} from "@abacritt/angularx-social-login";
 
 type CurrentUserData = {
   userId: number | null
@@ -21,12 +22,23 @@ export class AuthService implements IErrorHandler{
   constructor(
     private httpClient: HttpClient,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private googleAuthService: SocialAuthService
   ) { }
 
   async login(user: LoginModel) {
     try {
       const response = await this.httpClient.post<CurrentUserData>(keys.loginPath, user).toPromise()
+      this.userData = response!
+      localStorage.setItem('userData', JSON.stringify(this.userData))
+    } catch (e) {
+      this.handleError(e)
+    }
+  }
+
+  async googleLogin(user: GoogleLoginModel){
+    try {
+      const response = await this.httpClient.post<CurrentUserData>(keys.googleLoginPath, user).toPromise()
       this.userData = response!
       localStorage.setItem('userData', JSON.stringify(this.userData))
     } catch (e) {
@@ -41,7 +53,10 @@ export class AuthService implements IErrorHandler{
   logout(){
     this.userData = {access_token: "", userId: 0}
     localStorage.removeItem('userData')
-    this.router.navigate(['/login'])
+    this.googleAuthService.signOut()
+      .then(() => {
+        this.router.navigate(['/login'])
+      })
   }
 
   isAuthenticated(): boolean{
@@ -52,11 +67,6 @@ export class AuthService implements IErrorHandler{
   getToken(): string | null{
     this.loadUserDataFromLS()
     return this.userData.access_token
-  }
-
-  getUserId(): number | null {
-    this.loadUserDataFromLS()
-    return this.userData.userId
   }
 
   private loadUserDataFromLS(){

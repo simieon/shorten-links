@@ -9,7 +9,7 @@ export class User {
   @Column({unique: true, nullable: false})
   email: string
 
-  @Column({nullable: false})
+  @Column()
   password: string
 
   @OneToMany(type => Link, link => link.id)
